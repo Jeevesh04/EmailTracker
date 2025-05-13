@@ -8,9 +8,17 @@ PIXEL_PATH = "pixel.png"
 
 @app.route('/track/<recipient_id>.png')
 def track(recipient_id):
-    with open(LOG_FILE, "a") as f:
-        f.write(f"{datetime.datetime.now()} - {recipient_id} opened\n")
-    return send_file(PIXEL_PATH, mimetype="image/png")
+    timestamp = datetime.datetime.now()
+    log_entry = f"{timestamp} - {recipient_id} opened"
+    
+    # Save to file (local, temporary)
+    with open("opens.log", "a") as f:
+        f.write(log_entry + "\n")
+
+    # Print to Render logs (visible in dashboard)
+    print(log_entry)
+
+    return send_file("pixel.png", mimetype="image/png")
 
 @app.route("/")
 def home():
