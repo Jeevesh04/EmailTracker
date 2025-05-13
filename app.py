@@ -20,13 +20,37 @@ def track(recipient_id):
 
     return send_file("pixel.png", mimetype="image/png")
 
+
 @app.route("/")
 def home():
     return "📬 Email tracker is running!"
 
-@app.route('/download/log')
-def download_log():
-    return send_file("opens.log", as_attachment=True)
+
+@app.route('/download/log/time')
+def download_log_by_time():
+    after_str = request.args.get("after")
+
+    if not after_str:
+        return "❌ Missing 'after' query parameter", 400
+
+    try:
+        after_time = datetime.fromisoformat(after_str)
+    except ValueError:
+        return "❌ Invalid datetime format. Use YYYY-MM-DDTHH:MM:SS", 400
+
+    filtered_lines = []
+    with open("opens.log", "r") as f:
+        for line in f:
+            # Extract timestamp from each line
+            timestamp_str = line.split(" - ")[0]
+            try:
+                log_time = datetime.fromisoformat(timestamp_str.strip())
+                if log_time > after_time:
+                    filtered_lines.append(line)
+            except Exception:
+                continue  # skip lines that don't parse
+
+    return Response("".join(filtered_lines), mimetype="text/plain")
 
 if __name__ == "__main__":
     app.run()
