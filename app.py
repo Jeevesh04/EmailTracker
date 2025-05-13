@@ -25,11 +25,11 @@ def track(recipient_id):
 def home():
     return "📬 Email tracker is running!"
 
-
 @app.route('/download/log')
 def download_log():
-    return send_file("opens.log", as_attachment=True)
-
+    if request.args.get("key") == "yoursecret":
+        return send_file("opens.log", as_attachment=True)
+    return "Unauthorized", 401
 
 
 if __name__ == "__main__":
