@@ -27,9 +27,7 @@ def home():
 
 @app.route('/download/log')
 def download_log():
-    if request.args.get("key") == "yoursecret":
-        return send_file("opens.log", as_attachment=True)
-    return "Unauthorized", 401
+    return send_file("opens.log", as_attachment=True)
 
 
 if __name__ == "__main__":
