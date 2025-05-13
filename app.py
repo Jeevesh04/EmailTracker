@@ -33,22 +33,29 @@ def download_log_by_time():
     if not after_str:
         return "❌ Missing 'after' query parameter", 400
 
+    # Support both 'T' and space-separated datetime
+    after_str = after_str.replace("T", " ")
+
     try:
         after_time = datetime.fromisoformat(after_str)
     except ValueError:
-        return "❌ Invalid datetime format. Use YYYY-MM-DDTHH:MM:SS", 400
+        return "❌ Invalid datetime format. Use YYYY-MM-DDTHH:MM:SS or with space", 400
+
+    log_path = "opens.log"
+    if not os.path.exists(log_path):
+        return "❌ Log file not found.", 404
 
     filtered_lines = []
-    with open("opens.log", "r") as f:
+    with open(log_path, "r") as f:
         for line in f:
-            # Extract timestamp from each line
-            timestamp_str = line.split(" - ")[0]
             try:
-                log_time = datetime.fromisoformat(timestamp_str.strip())
+                timestamp_str = line.split(" - ")[0].strip()
+                log_time = datetime.fromisoformat(timestamp_str)
                 if log_time > after_time:
                     filtered_lines.append(line)
-            except Exception:
-                continue  # skip lines that don't parse
+            except Exception as e:
+                print(f"Skipping line: {e}")
+                continue
 
     return Response("".join(filtered_lines), mimetype="text/plain")
 
