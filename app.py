@@ -9,7 +9,7 @@ PIXEL_PATH = "pixel.png"
 
 @app.route('/track/<recipient_id>.png')
 def track(recipient_id):
-    timestamp = datetime.datetime.now(ZoneInfo("Asia/Kolkata"))
+    timestamp = datetime.now(ZoneInfo("America/New_York"))
     log_entry = f"{timestamp} - {recipient_id} opened"
     
     # Save to file (local, temporary)
